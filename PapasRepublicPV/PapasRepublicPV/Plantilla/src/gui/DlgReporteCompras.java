@@ -19,11 +19,11 @@ public class DlgReporteCompras extends JDialog {
     private JLabel lblFechaFin;
     
     private JComboBox<String> cbMes;
-    private JComboBox<Integer> cbAño;
+    private JComboBox<Integer> cbAÃ±o;
     private JLabel lblMes;
-    private JLabel lblAño;
+    private JLabel lblAÃ±o;
     
-    // Filtros específicos para compras/inventario
+    // Filtros especï¿½ficos para compras/inventario
     private JComboBox<String> cbProveedor;
     private JComboBox<String> cbInsumo;
     private JLabel lblProveedor;
@@ -70,7 +70,7 @@ public class DlgReporteCompras extends JDialog {
         
         // Componentes para reporte mensual
         lblMes = new JLabel("Mes:");
-        lblAño = new JLabel("Año:");
+        lblAÃ±o = new JLabel("AÃ±o:");
         
         String[] meses = {
             "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -79,20 +79,20 @@ public class DlgReporteCompras extends JDialog {
         cbMes = new JComboBox<>(meses);
         cbMes.setSelectedIndex(LocalDate.now().getMonthValue() - 1);
         
-        // Combo de años (últimos 5 años y próximos 2)
-        Integer[] años = new Integer[8];
-        int añoActual = LocalDate.now().getYear();
+        // Combo de aï¿½os (ï¿½ltimos 5 aï¿½os y prï¿½ximos 2)
+        Integer[] aÃ±os = new Integer[8];
+        int aÃ±oActual = LocalDate.now().getYear();
         for (int i = 0; i < 8; i++) {
-            años[i] = añoActual - 5 + i;
+            aÃ±os[i] = aÃ±oActual - 5 + i;
         }
-        cbAño = new JComboBox<>(años);
-        cbAño.setSelectedItem(añoActual);
+        cbAÃ±o = new JComboBox<>(aÃ±os);
+        cbAÃ±o.setSelectedItem(aÃ±oActual);
         
-        // Componentes específicos para compras/inventario
+        // Componentes especï¿½ficos para compras/inventario
         lblProveedor = new JLabel("Proveedor:");
         lblInsumo = new JLabel("Insumo:");
         
-        // Datos de ejemplo - aquí cargarías desde tu base de datos
+        // Datos de ejemplo - aquï¿½ cargarï¿½as desde tu base de datos
         String[] proveedores = {
             "Seleccionar...", "Proveedor A", "Proveedor B", "Proveedor C", 
             "Distribuidora Central", "Suministros del Norte"
@@ -101,7 +101,7 @@ public class DlgReporteCompras extends JDialog {
         
         String[] insumos = {
             "Seleccionar...", "Papas", "Aceite", "Sal", "Condimentos", 
-            "Empaques", "Etiquetas", "Cajas de cartón"
+            "Empaques", "Etiquetas", "Cajas de cartï¿½n"
         };
         cbInsumo = new JComboBox<>(insumos);
         
@@ -134,7 +134,7 @@ public class DlgReporteCompras extends JDialog {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        // Panel superior - Título
+        // Panel superior - Tï¿½tulo
         JPanel panelTitulo = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JLabel lblTitulo = new JLabel("REPORTE DE COMPRAS / INVENTARIO");
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
@@ -162,7 +162,7 @@ public class DlgReporteCompras extends JDialog {
         panelFechas = new JPanel(new GridBagLayout());
         panelFechas.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createEtchedBorder(),
-            "Configuración de Reporte Diario",
+            "Configuraciï¿½n de Reporte Diario",
             TitledBorder.LEFT,
             TitledBorder.TOP,
             new Font("Arial", Font.BOLD, 12)
@@ -222,7 +222,7 @@ public class DlgReporteCompras extends JDialog {
         panelMensual = new JPanel(new GridBagLayout());
         panelMensual.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createEtchedBorder(),
-            "Configuración de Reporte Mensual",
+            "Configuraciï¿½n de Reporte Mensual",
             TitledBorder.LEFT,
             TitledBorder.TOP,
             new Font("Arial", Font.BOLD, 12)
@@ -240,15 +240,15 @@ public class DlgReporteCompras extends JDialog {
         gbc.weightx = 1.0;
         panelMensual.add(cbMes, gbc);
         
-        // Año
+        // Aï¿½o
         gbc.gridx = 0; gbc.gridy = 1;
         gbc.fill = GridBagConstraints.NONE;
         gbc.weightx = 0.0;
-        panelMensual.add(lblAño, gbc);
+        panelMensual.add(lblAÃ±o, gbc);
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
-        panelMensual.add(cbAño, gbc);
+        panelMensual.add(cbAÃ±o, gbc);
         
         // Filtros para reporte mensual
         gbc.gridx = 0; gbc.gridy = 2;
@@ -282,7 +282,7 @@ public class DlgReporteCompras extends JDialog {
         
         String[] insumosMensual = {
             "Seleccionar...", "Papas", "Aceite", "Sal", "Condimentos", 
-            "Empaques", "Etiquetas", "Cajas de cartón"
+            "Empaques", "Etiquetas", "Cajas de cartï¿½n"
         };
         JComboBox<String> cbInsumoMensual = new JComboBox<>(insumosMensual);
         panelMensual.add(cbInsumoMensual, gbc);
@@ -339,13 +339,13 @@ public class DlgReporteCompras extends JDialog {
             }
         });
         
-        // Botón generar
+        // Botï¿½n generar
         btnGenerar.addActionListener(e -> generarReporte());
         
-        // Botón limpiar
+        // Botï¿½n limpiar
         btnLimpiar.addActionListener(e -> limpiarCampos());
         
-        // Botón cancelar
+        // Botï¿½n cancelar
         btnCancelar.addActionListener(e -> dispose());
     }
     
@@ -356,7 +356,7 @@ public class DlgReporteCompras extends JDialog {
         setResizable(false);
     }
     
-    // Métodos de funcionalidad (para implementar la lógica)
+    // Mï¿½todos de funcionalidad (para implementar la lï¿½gica)
     private void generarReporte() {
         if (validarDatos()) {
             StringBuilder mensaje = new StringBuilder();
@@ -370,10 +370,10 @@ public class DlgReporteCompras extends JDialog {
                 mensaje.append("Hasta: ").append(new java.text.SimpleDateFormat("dd/MM/yyyy").format(fechaFin)).append("\n");
             } else {
                 String mes = (String) cbMes.getSelectedItem();
-                Integer año = (Integer) cbAño.getSelectedItem();
+                Integer aÃ±o = (Integer) cbAÃ±o.getSelectedItem();
                 
                 mensaje.append("Generando reporte mensual de compras/inventario\n");
-                mensaje.append("Mes: ").append(mes).append(" ").append(año).append("\n");
+                mensaje.append("Mes: ").append(mes).append(" ").append(aÃ±o).append("\n");
             }
             
             // Agregar filtros
@@ -401,7 +401,7 @@ public class DlgReporteCompras extends JDialog {
             if (dateInicio.getDate() == null || dateFin.getDate() == null) {
                 JOptionPane.showMessageDialog(this, 
                     "Por favor seleccione ambas fechas", 
-                    "Error de validación", 
+                    "Error de validaciï¿½n", 
                     JOptionPane.ERROR_MESSAGE);
                 return false;
             }
@@ -409,7 +409,7 @@ public class DlgReporteCompras extends JDialog {
             if (dateInicio.getDate().after(dateFin.getDate())) {
                 JOptionPane.showMessageDialog(this, 
                     "La fecha de inicio no puede ser posterior a la fecha fin", 
-                    "Error de validación", 
+                    "Error de validaciï¿½n", 
                     JOptionPane.ERROR_MESSAGE);
                 return false;
             }
@@ -422,7 +422,7 @@ public class DlgReporteCompras extends JDialog {
         dateInicio.setDate(new java.util.Date());
         dateFin.setDate(new java.util.Date());
         cbMes.setSelectedIndex(LocalDate.now().getMonthValue() - 1);
-        cbAño.setSelectedItem(LocalDate.now().getYear());
+        cbAÃ±o.setSelectedItem(LocalDate.now().getYear());
         
         cbProveedor.setSelectedIndex(0);
         cbInsumo.setSelectedIndex(0);
