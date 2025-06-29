@@ -1,0 +1,59 @@
+package dao;
+
+import clases.Usuario;
+
+import java.util.ArrayList;
+
+public class UsuarioDAO {
+	
+	//  Atributo privado
+	private ArrayList <Usuario> per;
+	//  Constructor
+    public UsuarioDAO() {
+    	per = new ArrayList <Usuario> ();
+		adicionar(new Usuario(1001, "Juan Prado Salazar", "07557853", 82.3, 1.75, 3));
+		adicionar(new Usuario(1002, "Pedro Romero Soto", "11002348", 79.5, 1.58, 1));
+		adicionar(new Usuario(1003, "Luis Pinto Garza", "62279345", 82.7, 1.83, 0));
+		adicionar(new Usuario(1004, "Daniel Rojas Saenz", "20977241", 47.2, 1.72, 2));
+		adicionar(new Usuario(1005, "Jorge Espinal Vega", "06377845", 64.9, 1.88, 1));
+    }
+	//  Operaciones públicas básicas
+	public void adicionar(Usuario x) {
+		per.add(x);
+	}
+	public int tamaño() {
+		return per.size();
+	}
+	public Usuario obtener(int i) {
+		return per.get(i);
+	}
+	public Usuario buscar(int codigo) {
+		Usuario x;
+		for (int i=0; i<tamaño(); i++) {
+			x = obtener(i);
+			if (x.getCodigo() == codigo)
+				return x;
+		}
+		return null;
+	}
+	public Usuario buscar(String dni) {
+		Usuario x;
+		for (int i=0; i<tamaño(); i++) {
+			x = obtener(i);
+			if (x.getDni().equals(dni))
+				return x;
+		}
+		return null;
+	}
+	public void eliminar(Usuario x) {
+		per.remove(x);
+	}
+	//  Operaciones públicas complementarias
+	public int codigoCorrelativo() {
+		if (tamaño() == 0)
+			return 1001;
+		else
+			return obtener(tamaño()-1).getCodigo() + 1;		
+	}
+	
+}

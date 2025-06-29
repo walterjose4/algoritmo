@@ -1,0 +1,612 @@
+package gui;
+
+import clases.Proveedor;
+import java.awt.EventQueue;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
+import java.awt.Color;
+import javax.swing.JComboBox;
+
+public class DlgProveedores extends JDialog implements ActionListener, KeyListener, MouseListener {
+    private static final long serialVersionUID = 1L;
+
+    private JLabel lblCodigo;
+    private JLabel lblNombre;
+    private JLabel lblNumeroDeDocumento;
+    private JLabel lblTipoDeDocumento;
+    private JTextField txtCodigo;
+    private JTextField txtNombre;
+    private JTextField txtNumeroDeDocumento;
+    private JComboBox<String> cboTipoDeDocumento;
+    private JTextField txtBuscador;
+    private JScrollPane scrollPane;
+    private JButton btnAdicionar;
+    private JButton btnModificar;
+    private JButton btnEliminar;
+    private JTable tblProveedor;
+    private DefaultTableModel modelo;
+    private JButton btnRegresar;
+    private JLabel lblBuscador;
+
+    // Declaración global
+    ArregloProveedores ap = new ArregloProveedores();
+
+    /**
+     * Lanza la aplicación.
+     */
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    DlgProveedores dialog = new DlgProveedores();
+                    dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                    dialog.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    /**
+     * Crea el diálogo.
+     */
+    public DlgProveedores() {
+        setResizable(false);
+        setTitle("Mantenimiento | Proveedores");
+        setBounds(100, 100, 810, 610);
+        getContentPane().setLayout(null);
+
+        lblCodigo = new JLabel("Código");
+        lblCodigo.setBounds(10, 10, 110, 23);
+        getContentPane().add(lblCodigo);
+
+        txtCodigo = new JTextField();
+        txtCodigo.setEditable(false); 
+        txtCodigo.setBounds(171, 10, 150, 23);
+        getContentPane().add(txtCodigo);
+        txtCodigo.setColumns(10);
+
+        lblNombre = new JLabel("Nombre");
+        lblNombre.setBounds(10, 38, 70, 23);
+        getContentPane().add(lblNombre);
+
+        txtNombre = new JTextField();
+        txtNombre.setBounds(171, 38, 250, 23);
+        getContentPane().add(txtNombre);
+        txtNombre.setEditable(false);
+        txtNombre.setColumns(10);
+
+        lblNumeroDeDocumento = new JLabel("Número de Documento");
+        lblNumeroDeDocumento.setBounds(10, 66, 151, 23);
+        getContentPane().add(lblNumeroDeDocumento);
+
+        txtNumeroDeDocumento = new JTextField();
+        txtNumeroDeDocumento.setBounds(171, 66, 150, 22);
+        getContentPane().add(txtNumeroDeDocumento);
+        txtNumeroDeDocumento.setEditable(false);
+        txtNumeroDeDocumento.setColumns(10);
+
+        lblTipoDeDocumento = new JLabel("Tipo de Documento");
+        lblTipoDeDocumento.setBounds(10, 94, 121, 23);
+        getContentPane().add(lblTipoDeDocumento);
+
+        cboTipoDeDocumento = new JComboBox<>();
+        cboTipoDeDocumento.setBounds(171, 95, 200, 21);
+        cboTipoDeDocumento.addItem("R.U.C.");
+        cboTipoDeDocumento.addItem("DNI");
+        cboTipoDeDocumento.addItem("PASAPORTE");
+        cboTipoDeDocumento.addItem("CARNET DE EXTRANJERIA");
+        cboTipoDeDocumento.setSelectedIndex(0);
+        cboTipoDeDocumento.setEnabled(false);
+        getContentPane().add(cboTipoDeDocumento);
+
+        btnAdicionar = new JButton("Adicionar");
+        btnAdicionar.setForeground(Color.BLACK);
+        btnAdicionar.addActionListener(this);
+        btnAdicionar.setBounds(635, 10, 150, 23);
+        getContentPane().add(btnAdicionar);
+
+        btnModificar = new JButton("Modificar");
+        btnModificar.setForeground(Color.BLACK);
+        btnModificar.addActionListener(this);
+        btnModificar.setBounds(635, 38, 150, 23);
+        getContentPane().add(btnModificar);
+
+        btnEliminar = new JButton("Eliminar");
+        btnEliminar.setForeground(Color.BLACK);
+        btnEliminar.addActionListener(this);
+        btnEliminar.setBounds(635, 66, 150, 23);
+        getContentPane().add(btnEliminar);
+
+        btnRegresar = new JButton("Regresar");
+        btnRegresar.addActionListener(this);
+        btnRegresar.setBounds(660, 146, 124, 23);
+        getContentPane().add(btnRegresar);
+
+        txtBuscador = new JTextField();
+        txtBuscador.setToolTipText("Buscador");
+        txtBuscador.setBounds(635, 95, 150, 20);
+        getContentPane().add(txtBuscador);
+        txtBuscador.setColumns(10);
+        txtBuscador.addKeyListener(this);
+
+        scrollPane = new JScrollPane();
+        scrollPane.setBounds(10, 180, 775, 380);
+        getContentPane().add(scrollPane);
+
+        tblProveedor = new JTable();
+        tblProveedor.addKeyListener(this);
+        tblProveedor.addMouseListener(this);
+        tblProveedor.setFillsViewportHeight(true);
+        scrollPane.setViewportView(tblProveedor);
+
+        modelo = new DefaultTableModel();
+        modelo.addColumn("CÓDIGO");
+        modelo.addColumn("PROVEEDOR");
+        modelo.addColumn("NÚMERO DE DOCUMENTO");
+        modelo.addColumn("TIPO DE DOCUMENTO");
+        tblProveedor.setModel(modelo);
+
+        ajustarAnchoColumnas();
+        listar(""); // Lista todos al inicio
+        editarFila();
+        habilitarEntradas(false);
+        txtCodigo.setText("" + ap.codigoCorrelativo());
+
+        lblBuscador = new JLabel("Buscador");
+        lblBuscador.setBounds(566, 98, 70, 14);
+        getContentPane().add(lblBuscador);
+    }
+
+    public void actionPerformed(ActionEvent arg0) {
+        if (arg0.getSource() == btnEliminar) {
+            actionPerformedBtnEliminar(arg0);
+        } else if (arg0.getSource() == btnModificar) {
+            actionPerformedBtnModificar(arg0);
+        } else if (arg0.getSource() == btnAdicionar) {
+            actionPerformedBtnAdicionar(arg0);
+        } else if (arg0.getSource() == btnRegresar) {
+            actionPerformedBtnRegresar(arg0);
+        }
+    }
+
+    protected void actionPerformedBtnRegresar(ActionEvent arg0) {
+        // Cierra el diálogo, regresando al menú principal
+        dispose();
+    }
+
+    protected void actionPerformedBtnAdicionar(ActionEvent arg0) {
+        // Si "Adicionar" no está seleccionado, habilita entradas para nuevo registro
+        if (btnAdicionar.getForeground() == Color.BLACK) {
+            btnAdicionar.setForeground(Color.BLUE);
+            btnModificar.setForeground(Color.BLACK);
+            btnEliminar.setForeground(Color.BLACK);
+            habilitarEntradas(true);
+            limpieza();
+            txtNombre.requestFocus();
+        } else {
+            // Si "Adicionar" está seleccionado, realiza la operación de agregar
+            adicionarModificar();
+            btnAdicionar.setForeground(Color.BLACK);
+            habilitarEntradas(false);
+        }
+    }
+
+    protected void actionPerformedBtnModificar(ActionEvent arg0) {
+        if (ap.tamanio() > 0) {
+            // Si "Modificar" no está seleccionado, habilita entradas para modificar
+            if (btnModificar.getForeground() == Color.BLACK) {
+                btnAdicionar.setForeground(Color.BLACK);
+                btnModificar.setForeground(Color.BLUE);
+                btnEliminar.setForeground(Color.BLACK);
+                editarFila();
+                habilitarEntradas(true);
+                txtNombre.requestFocus();
+            } else {
+                // Si "Modificar" está seleccionado, realiza modificación
+                adicionarModificar();
+                btnModificar.setForeground(Color.BLACK);
+                habilitarEntradas(false);
+            }
+        } else {
+            mensaje("No hay proveedores para modificar.");
+        }
+    }
+
+    protected void actionPerformedBtnEliminar(ActionEvent arg0) {
+        if (ap.tamanio() > 0) {
+            btnAdicionar.setForeground(Color.BLACK);
+            btnModificar.setForeground(Color.BLACK);
+            btnEliminar.setForeground(Color.BLUE);
+
+            int selectedRow = tblProveedor.getSelectedRow();
+            if (selectedRow == -1) {
+                mensaje("Por favor, seleccione un proveedor para eliminar.");
+                btnEliminar.setForeground(Color.BLACK);
+                return;
+            }
+            editarFila();
+            habilitarEntradas(false);
+
+            int codigo = leerCodigo();
+            int ok = confirmar("¿Desea eliminar CÓDIGO " + codigo + " ?");
+            if (ok == JOptionPane.YES_OPTION) {
+                Proveedores x = ap.buscar(codigo);
+                if (x != null) {
+                    ap.eliminar(x);
+                    int posFilaToSelect = -1;
+                    if (ap.tamanio() > 0) {
+                        if (selectedRow < ap.tamanio()) {
+                            posFilaToSelect = selectedRow;
+                        } else {
+                            posFilaToSelect = ap.tamanio() - 1;
+                        }
+                    }
+                    listar("");
+                    if (ap.tamanio() > 0) {
+                        tblProveedor.setRowSelectionInterval(posFilaToSelect, posFilaToSelect);
+                        editarFila();
+                    } else {
+                        limpieza();
+                    }
+                    mensaje("Proveedor eliminado exitosamente.");
+                } else {
+                    mensaje("Proveedor no encontrado en la base de datos.");
+                }
+            }
+            btnEliminar.setForeground(Color.BLACK);
+        } else {
+            mensaje("No hay proveedores para eliminar.");
+        }
+    }
+
+    public void keyPressed(KeyEvent arg0) {
+        // No implementado
+    }
+
+    public void keyReleased(KeyEvent arg0) {
+        arg0.consume();
+        // Si el evento es del buscador, filtra la tabla
+        if (arg0.getSource() == txtBuscador) {
+            String searchText = txtBuscador.getText().trim();
+            listar(searchText);
+        } else if (arg0.getSource() == tblProveedor) {
+            editarFila();
+        }
+    }
+
+    public void keyTyped(KeyEvent arg0) {
+        // No implementado
+    }
+
+    public void mouseClicked(MouseEvent arg0) {
+        if (arg0.getSource() == tblProveedor) {
+            btnAdicionar.setForeground(Color.BLACK);
+            btnModificar.setForeground(Color.BLACK);
+            btnEliminar.setForeground(Color.BLACK);
+            habilitarEntradas(false);
+            editarFila();
+        }
+    }
+
+    public void mouseEntered(MouseEvent arg0) {}
+    public void mouseExited(MouseEvent arg0) {}
+    public void mousePressed(MouseEvent arg0) {}
+    public void mouseReleased(MouseEvent arg0) {}
+
+    // Ajusta el ancho de las columnas de la tabla de acuerdo a un porcentaje
+    private void ajustarAnchoColumnas() {
+        TableColumnModel tcm = tblProveedor.getColumnModel();
+        tcm.getColumn(0).setPreferredWidth(anchoColumna(8));
+        tcm.getColumn(1).setPreferredWidth(anchoColumna(20));
+        tcm.getColumn(2).setPreferredWidth(anchoColumna(15));
+        tcm.getColumn(3).setPreferredWidth(anchoColumna(10));
+    }
+
+    // Lista los proveedores en la tabla, filtrando si es necesario
+    void listar(String searchText) {
+        modelo.setRowCount(0);
+        boolean hasSearch = !searchText.isEmpty();
+        for (int i = 0; i < ap.tamanio(); i++) {
+            Proveedores x = ap.obtener(i);
+            if (hasSearch) {
+                String providerName = x.getProveedor().toLowerCase();
+                String docNumber = String.valueOf(x.getNumeroDeDocumento());
+                String docType = x.getTipoDeDocumento().toLowerCase();
+                String code = String.valueOf(x.getCodigo());
+                String searchLower = searchText.toLowerCase();
+                if (!(providerName.contains(searchLower) ||
+                      docNumber.contains(searchLower) ||
+                      docType.contains(searchLower) ||
+                      code.contains(searchLower))) {
+                    continue;
+                }
+            }
+            Object[] fila = {
+                x.getCodigo(),
+                x.getProveedor(),
+                x.getNumeroDeDocumento(),
+                x.getTipoDeDocumento()
+            };
+            modelo.addRow(fila);
+        }
+        if (modelo.getRowCount() > 0) {
+            tblProveedor.setRowSelectionInterval(0, 0);
+            editarFila();
+        } else {
+            limpieza();
+        }
+    }
+
+    // Carga en los campos los datos del proveedor seleccionado
+    void editarFila() {
+        if (ap.tamanio() == 0) {
+            limpieza();
+        } else {
+            int selectedRow = tblProveedor.getSelectedRow();
+            if (selectedRow == -1 && modelo.getRowCount() > 0) {
+                selectedRow = 0;
+                tblProveedor.setRowSelectionInterval(selectedRow, selectedRow);
+            }
+            if (selectedRow != -1) {
+                int codigo = (int) modelo.getValueAt(selectedRow, 0);
+                Proveedores x = ap.buscar(codigo);
+                if (x != null) {
+                    txtCodigo.setText("" + x.getCodigo());
+                    txtNombre.setText(x.getProveedor());
+                    txtNumeroDeDocumento.setText("" + x.getNumeroDeDocumento());
+                    cboTipoDeDocumento.setSelectedItem(x.getTipoDeDocumento());
+                } else {
+                    limpieza();
+                }
+            } else {
+                limpieza();
+            }
+        }
+    }
+
+    // Limpia todos los campos y coloca el código correlativo
+    void limpieza() {
+        txtCodigo.setText("" + ap.codigoCorrelativo());
+        txtNombre.setText("");
+        txtNumeroDeDocumento.setText("");
+        cboTipoDeDocumento.setSelectedIndex(0);
+    }
+
+    // Maneja la lógica de agregar o modificar un proveedor
+    void adicionarModificar() {
+        int codigo;
+        if (btnAdicionar.getForeground() == Color.BLUE) {
+            codigo = ap.codigoCorrelativo();
+        } else {
+            codigo = leerCodigo();
+            if (codigo == -1) {
+                error("No se pudo obtener el código del proveedor a modificar.", (JTextField) null);
+                return;
+            }
+        }
+        String proveedor = leerProveedor();
+        if (proveedor.isEmpty()) {
+            error("Ingrese el nombre del proveedor.", txtNombre);
+            return;
+        }
+        String tipoDeDocumento = leerTipoDeDocumento();
+        if (tipoDeDocumento == null || tipoDeDocumento.isEmpty()) {
+            error("Seleccione un tipo de documento.", cboTipoDeDocumento);
+            return;
+        }
+        long numeroDeDocumento;
+        try {
+            numeroDeDocumento = leerNumeroDeDocumento();
+        } catch (NumberFormatException e) {
+            error("Ingrese un número de documento válido (solo números y no vacío).", txtNumeroDeDocumento);
+            return;
+        }
+        if (btnAdicionar.getForeground() == Color.BLUE) {
+            if (ap.buscarPorDocumento(numeroDeDocumento, tipoDeDocumento) == null) {
+                Proveedores nueva = new Proveedores(codigo, proveedor, numeroDeDocumento, tipoDeDocumento);
+                ap.adicionar(nueva);
+                listar("");
+                tblProveedor.setRowSelectionInterval(ap.tamanio() - 1, ap.tamanio() - 1);
+                limpieza();
+                txtNombre.requestFocus();
+                mensaje("Proveedor registrado exitosamente.");
+            } else {
+                error("Un proveedor con el número de documento " + numeroDeDocumento + " y tipo " + tipoDeDocumento + " ya existe.", txtNumeroDeDocumento);
+            }
+        }
+        else if (btnModificar.getForeground() == Color.BLUE) {
+            int selectedTableIndex = tblProveedor.getSelectedRow();
+            if (selectedTableIndex == -1) {
+                error("Debe seleccionar un proveedor para modificar.", tblProveedor);
+                return;
+            }
+            int originalCodigo = (int) modelo.getValueAt(selectedTableIndex, 0);
+            Proveedores x = ap.buscar(originalCodigo);
+            if (x == null) {
+                error("Proveedor a modificar no encontrado.", (JTextField) null);
+                return;
+            }
+            Proveedores existingWithDoc = ap.buscarPorDocumento(numeroDeDocumento, tipoDeDocumento);
+            if (existingWithDoc == null || existingWithDoc.getCodigo() == x.getCodigo()) {
+                x.setProveedor(proveedor);
+                x.setNumeroDeDocumento(numeroDeDocumento);
+                x.setTipoDeDocumento(tipoDeDocumento);
+                ap.actualizar(x);
+                listar("");
+                tblProveedor.setRowSelectionInterval(selectedTableIndex, selectedTableIndex);
+                mensaje("Proveedor modificado exitosamente.");
+                btnModificar.setForeground(Color.BLACK);
+                habilitarEntradas(false);
+            } else {
+                error("El número de documento " + numeroDeDocumento + " y tipo " + tipoDeDocumento + " ya están asociados a otro proveedor.", txtNumeroDeDocumento);
+            }
+        }
+    }
+
+    // Muestra un mensaje informativo
+    void mensaje(String s) {
+        JOptionPane.showMessageDialog(this, s, "Información", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    // Muestra un error y enfoca un JTextField
+    void error(String s, JTextField txt) {
+        mensaje(s);
+        if (txt != null) {
+            txt.setText("");
+            txt.requestFocus();
+        }
+    }
+
+    // Muestra un error y enfoca un JComboBox
+    void error(String s, JComboBox<String> cbo) {
+        mensaje(s);
+        if (cbo != null) {
+            cbo.requestFocusInWindow();
+        }
+    }
+
+    // Muestra un error y enfoca una JTable
+    void error(String s, JTable tbl) {
+        mensaje(s);
+        if (tbl != null) {
+            tbl.requestFocusInWindow();
+        }
+    }
+
+    // Habilita o deshabilita los campos de entrada
+    void habilitarEntradas(boolean sino) {
+        txtNombre.setEditable(sino);
+        txtNumeroDeDocumento.setEditable(sino);
+        cboTipoDeDocumento.setEnabled(sino);
+    }
+
+    // Lee el código del proveedor
+    int leerCodigo() {
+        try {
+            return Integer.parseInt(txtCodigo.getText().trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    // Lee el tipo de documento seleccionado
+    String leerTipoDeDocumento() {
+        if (cboTipoDeDocumento.getSelectedItem() != null) {
+            return cboTipoDeDocumento.getSelectedItem().toString();
+        }
+        return "";
+    }
+
+    // Lee el nombre del proveedor
+    String leerProveedor() {
+        return txtNombre.getText().trim();
+    }
+
+    // Lee el número de documento y lo convierte a long
+    long leerNumeroDeDocumento() throws NumberFormatException {
+        String numDocStr = txtNumeroDeDocumento.getText().trim();
+        if (numDocStr.isEmpty()) {
+            throw new NumberFormatException("El número de documento no puede estar vacío.");
+        }
+        return Long.parseLong(numDocStr);
+    }
+
+    // Calcula el ancho de columna según porcentaje
+    int anchoColumna(int porcentaje) {
+        if (scrollPane.getWidth() > 0) {
+            return porcentaje * scrollPane.getWidth() / 100;
+        } else {
+            return porcentaje * 775 / 100;
+        }
+    }
+
+    // Muestra un diálogo de confirmación y retorna la opción elegida
+    int confirmar(String s) {
+        return JOptionPane.showConfirmDialog(this, s, "Alerta", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null);
+    }
+}
+
+// Clase ejemplo para ArregloProveedores para pruebas y compilación.
+// En tu proyecto real debes usar tu propia clase ubicada en el paquete arreglos.
+class ArregloProveedores {
+    private java.util.ArrayList<Proveedores> listaProveedores;
+    public ArregloProveedores() {
+        listaProveedores = new java.util.ArrayList<>();
+    }
+
+    public void adicionar(Proveedores p) {
+        listaProveedores.add(p);
+    }
+
+    public int tamanio() {
+        return listaProveedores.size();
+    }
+
+    public Proveedores obtener(int i) {
+        if (i >= 0 && i < listaProveedores.size()) {
+            return listaProveedores.get(i);
+        }
+        return null;
+    }
+
+    public Proveedores buscar(int codigo) {
+        for (Proveedores p : listaProveedores) {
+            if (p.getCodigo() == codigo) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public Proveedores buscarPorDocumento(long numeroDeDocumento, String tipoDeDocumento) {
+        for (Proveedores p : listaProveedores) {
+            if (p.getNumeroDeDocumento() == numeroDeDocumento && p.getTipoDeDocumento().equals(tipoDeDocumento)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public void eliminar(Proveedores p) {
+        listaProveedores.remove(p);
+    }
+
+    public void actualizar(Proveedores pActualizado) {
+        for (int i = 0; i < listaProveedores.size(); i++) {
+            if (listaProveedores.get(i).getCodigo() == pActualizado.getCodigo()) {
+                listaProveedores.set(i, pActualizado);
+                return;
+            }
+        }
+    }
+
+    public int codigoCorrelativo() {
+        if (listaProveedores.isEmpty()) {
+            return 10001; // Si la lista está vacía, empieza en 10001
+        } else {
+            int maxCode = 0;
+            for (Proveedores p : listaProveedores) {
+                if (p.getCodigo() > maxCode) {
+                    maxCode = p.getCodigo();
+                }
+            }
+            return maxCode + 1; // Busca el código máximo y suma uno
+        }
+    }
+}

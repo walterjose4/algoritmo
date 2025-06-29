@@ -1,0 +1,73 @@
+package arreglos;
+
+import clases.Proveedor;
+
+import java.util.ArrayList;
+
+public class ArregloProveedores {
+	
+	//  Atributo privado
+	private ArrayList <Proveedor> per;
+	//  Constructor
+    public ArregloProveedores() {
+    	per = new ArrayList <Proveedor> ();
+	
+    }
+	//  Operaciones p�blicas b�sicas
+	public void adicionar(Proveedor x) {
+		per.add(x);
+	}
+	public int tamanio() {
+		return per.size();
+	}
+	public Proveedor obtener(int i) {
+		return per.get(i);
+	}
+	public Proveedor buscar(int codigo) {
+		Proveedores x;
+		for (int i=0; i<tamanio(); i++) {
+			x = obtener(i);
+			if (x.getCodigo() == codigo)
+				return x;
+		}
+		return null;
+	}
+	public Proveedores buscar(String tipoDeDocumento) {
+		Proveedores x;
+		for (int i=0; i<tamanio(); i++) {
+			x = obtener(i);
+			if (x.getTipoDeDocumento().equals(tipoDeDocumento))
+				return x;
+		}
+		return null;
+	}
+	public void eliminar(Proveedores x) {
+		per.remove(x);
+	}
+	//  Operaciones p�blicas complementarias
+	public int codigoCorrelativo() {
+		if (tamanio() == 0)
+			return 1001;
+		else
+			return obtener(tamanio()-1).getCodigo() + 1;		
+	}
+	public Proveedores buscarPorDocumento(long numeroDeDocumento, String tipoDeDocumento) {
+	    for (int i = 0; i < tamanio(); i++) {
+	        Proveedores x = obtener(i);
+	        if (x.getNumeroDeDocumento() == numeroDeDocumento &&
+	            x.getTipoDeDocumento().equals(tipoDeDocumento)) {
+	            return x;
+	        }
+	    }
+	    return null;
+	}
+	public void actualizar(Proveedores x) {
+	    // Si usas objetos, ya están referenciados, pero si necesitas por índice:
+	    for (int i = 0; i < tamanio(); i++) {
+	        if (per.get(i).getCodigo() == x.getCodigo()) {
+	            per.set(i, x);
+	            break;
+	        }
+	    }
+	}
+}

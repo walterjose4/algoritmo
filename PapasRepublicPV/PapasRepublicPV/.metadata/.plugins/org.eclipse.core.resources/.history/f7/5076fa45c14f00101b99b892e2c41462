@@ -1,0 +1,100 @@
+package clases;
+
+public class Usuario {
+    private int codigo;
+    private String usuario;
+    private String contrasenia; // Idealmente, esto debería ser un hash
+    private String apPaterno;
+    private String apMaterno;
+    private int permisoCreate;
+    private int permisoRead;
+    private int permisoUpdate;
+    private int permisoDelete;
+
+    // Constructor
+    public Usuario(int codigo, String usuario, String contrasenia, String apPaterno, String apMaterno,
+    		int permisoCreate, int permisoRead, int permisoUpdate, int permisoDelete) {
+        this.codigo = codigo;
+        this.usuario = usuario;
+        this.contrasenia = contrasenia;
+        this.apPaterno = apPaterno;
+        this.apMaterno = apMaterno;
+        this.permisoCreate = permisoCreate;
+        this.permisoRead = permisoRead;
+        this.permisoUpdate = permisoUpdate;
+        this.permisoDelete = permisoDelete;
+    }
+
+    // Getters y Setters
+    public int getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(int codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
+
+    public String getContrasenia() {
+        return contrasenia;
+    }
+
+    public void setContrasenia(String contrasenia) {
+        this.contrasenia = contrasenia;
+    }
+    
+    public String getApPaterno() {
+		return apPaterno;
+	}
+    
+    public void setApPaterno(String apPaterno) {
+    	this.apPaterno = apPaterno;
+    }
+    
+    public String getApMaterno() {
+    	return apMaterno;
+    }
+    
+    public void setApMaterno(String apMaterno) {
+		this.apMaterno = apMaterno;
+	}
+
+    public int isPermisoCreate() {
+        return permisoCreate;
+    }
+
+    public void setPermisoCreate(int permisoCreate) {
+        this.permisoCreate = permisoCreate;
+    }
+
+    public int isPermisoRead() {
+        return permisoRead;
+    }
+
+    public void setPermisoRead(int permisoRead) {
+        this.permisoRead = permisoRead;
+    }
+
+    public int isPermisoUpdate() {
+        return permisoUpdate;
+    }
+
+    public void setPermisoUpdate(int permisoUpdate) {
+        this.permisoUpdate = permisoUpdate;
+    }
+
+    public int isPermisoDelete() {
+        return permisoDelete;
+    }
+
+    public void setPermisoDelete(int permisoDelete) {
+        this.permisoDelete = permisoDelete;
+    }
+}

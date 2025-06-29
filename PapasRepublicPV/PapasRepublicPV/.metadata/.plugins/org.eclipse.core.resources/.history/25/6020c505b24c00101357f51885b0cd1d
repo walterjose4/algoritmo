@@ -1,0 +1,58 @@
+package arreglos;
+
+import clases.Usuario;
+import java.util.ArrayList;
+
+public class ArregloUsuarios {
+    private ArrayList<Usuario> listaUsuarios;
+
+    public ArregloUsuarios() {
+        listaUsuarios = new ArrayList<>();
+        
+    }
+
+    public void adicionar(Usuario usuario) {
+        listaUsuarios.add(usuario);
+    }
+
+    public int tamanio() {
+        return listaUsuarios.size();
+    }
+
+    public Usuarios obtener(int i) {
+        return listaUsuarios.get(i);
+    }
+
+    public Usuarios buscar(int codigo) {
+        for (Usuarios u : listaUsuarios) {
+            if (u.getCodigo() == codigo) {
+                return u;
+            }
+        }
+        return null;
+    }
+    
+    public Usuarios buscarPorNombreUsuario(String nombreUsuario) {
+        for (Usuarios u : listaUsuarios) {
+            if (u.getNombreDeUsuario().equalsIgnoreCase(nombreUsuario)) {
+                return u;
+            }
+        }
+        return null;
+    }
+
+
+    public void eliminar(Usuarios usuario) {
+        listaUsuarios.remove(usuario);
+    }
+
+    public int codigoCorrelativo() {
+        if (tamanio() == 0) {
+            return 1001; // Primer código
+        } else {
+            return obtener(tamanio() - 1).getCodigo() + 1;
+        }
+    }
+    
+
+}

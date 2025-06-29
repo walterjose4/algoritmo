@@ -1,0 +1,26 @@
+INDEX VERSION 1.134+C:\Users\julio\OneDrive\Desktop\CIBERTEC\CICLO 2\Algoritmia\PapasRepublicPV\.metadata\.plugins\org.eclipse.jdt.core
+4127817745.index
+2265381642.index
+2520862210.index
+1392690767.index
+3358593624.index
+538543729.index
+692082318.index
+1388800750.index
+2120794399.index
+2364846134.index
+800170301.index
+3768332817.index
+3671466166.index
+524684571.index
+2842296166.index
+1065924668.index
+1168800658.index
+1865797976.index
+2233720637.index
+3729101776.index
+1946442288.index
+3807486950.index
+1404880413.index
+2999982194.index
+3893514964.index

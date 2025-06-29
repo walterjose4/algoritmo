@@ -1,0 +1,600 @@
+package gui;
+
+import clases.Usuario;
+import arreglos.ArregloUsuarios;
+
+import java.awt.EventQueue;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField; 
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.FocusListener; // Importar FocusListener
+import java.awt.event.FocusEvent;     // Importar FocusEvent
+import java.awt.Color;
+import javax.swing.JCheckBox;
+import java.util.ArrayList; // Necesario para la lista filtrada
+import java.util.List;     // Necesario para la lista filtrada
+
+public class DlgUsuarios extends JDialog implements ActionListener, KeyListener, MouseListener, FocusListener { // Implementar FocusListener
+    private static final long serialVersionUID = 1L;
+
+    // Atributos de la clase
+    private JLabel lblCodigo;
+    private JLabel lblNombreDeUsuario;
+    private JLabel lblContraseña;
+    private JLabel lblPermisosParaUsuarios;
+    private JTextField txtCodigo;
+    private JTextField txtNombreDeUsuario;
+    private JTextField txtContraseña;
+    private JScrollPane scrollPane;
+    private JButton btnAdicionar;
+    private JButton btnModificar;
+    private JButton btnEliminar;
+    private JButton btnRegresar;
+    private JTable tblUsuarios;
+    private DefaultTableModel modelo;
+
+    private JCheckBox chckbxPermisoCreate;
+    private JCheckBox chckbxPermisoRead;
+    private JCheckBox chckbxPermisoUpdate;
+    private JCheckBox chckbxPermisoDelete;
+    private JTextField txtBuscador; // Campo de texto para la búsqueda
+
+    /**
+     * Lanza la aplicación.
+     */
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    DlgUsuarios dialog = new DlgUsuarios();
+                    dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                    dialog.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    /**
+     * Crea el diálogo.
+     */
+    public DlgUsuarios() {
+        setResizable(false);
+        setTitle("Mantenimiento | Usuarios");
+        setBounds(100, 100, 810, 610);
+        getContentPane().setLayout(null);
+
+        lblCodigo = new JLabel("Codigo");
+        lblCodigo.setBounds(10, 10, 110, 23);
+        getContentPane().add(lblCodigo);
+
+        lblNombreDeUsuario = new JLabel("Nombre de Usuario");
+        lblNombreDeUsuario.setBounds(10, 35, 110, 23);
+        getContentPane().add(lblNombreDeUsuario);
+
+        lblContraseña = new JLabel("Contraseña");
+        lblContraseña.setBounds(10, 60, 104, 23);
+        getContentPane().add(lblContraseña);
+
+        lblPermisosParaUsuarios = new JLabel("Permisos para los Usuarios");
+        lblPermisosParaUsuarios.setBounds(10, 85, 185, 23);
+        getContentPane().add(lblPermisosParaUsuarios);
+
+        txtCodigo = new JTextField();
+        txtCodigo.setBounds(205, 10, 110, 23);
+        getContentPane().add(txtCodigo);
+        txtCodigo.setColumns(10);
+        txtCodigo.setEditable(false); // El campo de código no es editable
+
+        txtNombreDeUsuario = new JTextField();
+        txtNombreDeUsuario.setBounds(205, 35, 251, 23);
+        getContentPane().add(txtNombreDeUsuario);
+        txtNombreDeUsuario.setEditable(false);
+        txtNombreDeUsuario.setColumns(10);
+
+        txtContraseña = new JTextField();
+        txtContraseña.setBounds(205, 60, 110, 23);
+        getContentPane().add(txtContraseña);
+        txtContraseña.setEditable(false);
+        txtContraseña.setColumns(10);
+
+        scrollPane = new JScrollPane();
+        scrollPane.setBounds(10, 170, 775, 390);
+        getContentPane().add(scrollPane);
+
+        tblUsuarios = new JTable();
+        tblUsuarios.addKeyListener(this);
+        tblUsuarios.addMouseListener(this);
+        tblUsuarios.setFillsViewportHeight(true);
+        scrollPane.setViewportView(tblUsuarios);
+
+        modelo = new DefaultTableModel();
+        modelo.addColumn("CODIGO");
+        modelo.addColumn("NOMBRE DE USUARIO");
+        modelo.addColumn("CONTRASEÑA");
+        modelo.addColumn("CREATE");
+        modelo.addColumn("READ");
+        modelo.addColumn("UPDATE");
+        modelo.addColumn("DELETE");
+        tblUsuarios.setModel(modelo);
+
+        btnAdicionar = new JButton("Adicionar");
+        btnAdicionar.setForeground(Color.BLACK);
+        btnAdicionar.addActionListener(this);
+        btnAdicionar.setBounds(635, 10, 150, 23);
+        getContentPane().add(btnAdicionar);
+
+        btnModificar = new JButton("Modificar");
+        btnModificar.setForeground(Color.BLACK);
+        btnModificar.addActionListener(this);
+        btnModificar.setBounds(635, 35, 150, 23);
+        getContentPane().add(btnModificar);
+
+        btnEliminar = new JButton("Eliminar");
+        btnEliminar.setForeground(Color.BLACK);
+        btnEliminar.addActionListener(this);
+        btnEliminar.setBounds(635, 60, 150, 23);
+        getContentPane().add(btnEliminar);
+
+        chckbxPermisoCreate = new JCheckBox("Create");
+        chckbxPermisoCreate.setBounds(201, 85, 65, 23);
+        chckbxPermisoCreate.setEnabled(false); // Inicialmente deshabilitado
+        getContentPane().add(chckbxPermisoCreate);
+
+        chckbxPermisoRead = new JCheckBox("Read");
+        chckbxPermisoRead.setBounds(271, 85, 65, 23);
+        chckbxPermisoRead.setEnabled(false); // Inicialmente deshabilitado
+        getContentPane().add(chckbxPermisoRead);
+
+        chckbxPermisoUpdate = new JCheckBox("Update");
+        chckbxPermisoUpdate.setBounds(341, 85, 75, 23);
+        chckbxPermisoUpdate.setEnabled(false); // Inicialmente deshabilitado
+        getContentPane().add(chckbxPermisoUpdate);
+
+        chckbxPermisoDelete = new JCheckBox("Delete");
+        chckbxPermisoDelete.setBounds(421, 85, 75, 23);
+        chckbxPermisoDelete.setEnabled(false); // Inicialmente deshabilitado
+        getContentPane().add(chckbxPermisoDelete);
+
+        btnRegresar = new JButton("Regresar");
+        btnRegresar.addActionListener(this);
+        btnRegresar.setBounds(681, 137, 104, 23);
+        getContentPane().add(btnRegresar);
+        
+        txtBuscador = new JTextField();
+        txtBuscador.setBounds(637, 86, 148, 20);
+        getContentPane().add(txtBuscador);
+        txtBuscador.setColumns(10);
+        txtBuscador.addKeyListener(this);
+        
+        lblBuscador = new JLabel("Buscador");
+        lblBuscador.setBounds(572, 89, 65, 14);
+        getContentPane().add(lblBuscador);
+
+        ajustarAnchoColumnas();
+        listar(0); // Listar todos los usuarios inicialmente
+        editarFila();
+        habilitarEntradas(false);
+    }
+
+    ArregloUsuarios ap = new ArregloUsuarios(); // Instancia de ArregloUsuarios
+    private JLabel lblBuscador;
+
+    public void actionPerformed(ActionEvent arg0) {
+        if (arg0.getSource() == btnEliminar) {
+            actionPerformedBtnEliminar(arg0);
+        } else if (arg0.getSource() == btnModificar) {
+            actionPerformedBtnModificar(arg0);
+        } else if (arg0.getSource() == btnAdicionar) {
+            actionPerformedBtnAdicionar(arg0);
+        } else if (arg0.getSource() == btnRegresar) {
+            actionPerformedBtnRegresar(arg0);
+        }
+    }
+    
+    protected void actionPerformedBtnRegresar(ActionEvent arg0) {
+        dispose(); // Cierra el diálogo
+    }
+
+    protected void actionPerformedBtnAdicionar(ActionEvent arg0) {
+    	try {
+			Usuario usuario= new Usuario();
+			usuario.setUsuario(txtNombreDeUsuario.getText().trim())
+			usuario.setContrasenia(txtContraseña.getText().trim());
+			usuario.setPermisoCreate(chckbxPermisoCreate.isSelected());
+			usuario.setPermisoRead(chckbxPermisoRead.isSelected());
+			usuario.setPermisoUpdate(chckbxPermisoUpdate.isSelected());
+			usuario.setPermisoDelete(chckbxPermisoDelete.isSelected());
+			if(arreglos.ArregloUsuarios.insertarUsuario(usuario)) {
+				JOptionPane.showMessageDialog(null, "Usuario agregado correctamente.", "Información", JOptionPane.INFORMATION_MESSAGE);
+			}else {
+				JOptionPane.showMessageDialog(null, "Error al agregar el usuario.", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+    }
+
+    protected void actionPerformedBtnModificar(ActionEvent arg0) {
+        // Verificar si hay usuarios en el arreglo para modificar
+        if (ap.tamanio() > 0) {
+            // Si el botón "Modificar" está inactivo (negro)
+            if (btnModificar.getForeground() == Color.BLACK) {
+                // Desactivar "Adicionar" y "Eliminar"
+                btnAdicionar.setForeground(Color.BLACK);
+                // Activar el botón "Modificar" (azul)
+                btnModificar.setForeground(Color.BLUE);
+                btnEliminar.setForeground(Color.BLACK);
+                // Cargar los datos de la fila seleccionada en los campos
+                editarFila();
+                // Habilitar los campos de entrada para edición
+                habilitarEntradas(true);
+                // Poner el foco en el campo de nombre de usuario
+                txtNombreDeUsuario.requestFocus();
+            } else {
+                // Si el botón "Modificar" ya está activo (azul), proceder a adicionar/modificar
+                adicionarModificar();
+            }
+        } else {
+            // Si no hay usuarios, mostrar un mensaje
+            mensaje("No hay usuarios para modificar.");
+        }
+    }
+
+    protected void actionPerformedBtnEliminar(ActionEvent arg0) {
+        // Verificar si hay usuarios en el arreglo para eliminar
+        if (ap.tamanio() > 0) {
+            // Desactivar "Adicionar" y "Modificar"
+            btnAdicionar.setForeground(Color.BLACK);
+            btnModificar.setForeground(Color.BLACK);
+            // Activar el botón "Eliminar" (azul)
+            btnEliminar.setForeground(Color.BLUE);
+            // Cargar los datos de la fila seleccionada en los campos (aunque estén deshabilitados)
+            editarFila();
+            // Deshabilitar los campos de entrada ya que es una operación de eliminación
+            habilitarEntradas(false);
+
+            int codigo = leerCodigo(); // Obtener el código del usuario a eliminar
+            int ok = confirmar("¿Desea eliminar el usuario con CÓDIGO " + codigo + "?"); // Pedir confirmación
+            if (ok == 0) { // Si el usuario confirma (SÍ)
+                Usuario x = ap.buscar(codigo); // Buscar el objeto usuario
+                if (x != null) {
+                    int posFila = tblUsuarios.getSelectedRow(); // Obtener el índice de la fila actualmente seleccionada
+                    ap.eliminar(x); // Eliminar el usuario del arreglo
+                    if (posFila >= ap.tamanio()) {
+                      
+                        posFila = ap.tamanio() - 1;
+                    }
+                    listar(txtBuscador.getText(), Math.max(0, posFila)); // Refrescar la tabla, manteniendo la selección si es posible
+                    editarFila(); // Actualizar los campos basándose en la nueva selección
+                } else {
+                    mensaje("Usuario no encontrado para eliminar.");
+                }
+            }
+            // Desactivar el botón "Eliminar" después de la operación
+            btnEliminar.setForeground(Color.BLACK);
+        } else {
+            mensaje("No hay usuarios para eliminar.");
+        }
+    }
+
+    public void keyPressed(KeyEvent arg0) {
+        
+    }
+
+    public void keyReleased(KeyEvent arg0) {
+        arg0.consume(); // Consumir el evento para evitar procesamiento adicional si es necesario
+        if (arg0.getSource() == tblUsuarios) {
+            // Si se liberó una tecla en la tabla, actualizar los campos de entrada
+            editarFila();
+        } else if (arg0.getSource() == txtBuscador) {
+            // Si se liberó una tecla en el campo de búsqueda, filtrar la tabla
+            keyReleasedTxtBuscador(arg0);
+        }
+    }
+
+    protected void keyReleasedTxtBuscador(KeyEvent arg0) {
+        // Cuando se libera una tecla en el campo de texto de búsqueda, actualizar la lista
+        listar(txtBuscador.getText(), 0); // Filtrar y mostrar desde la primera fila
+        editarFila(); // Actualizar los campos de detalle basándose en el primer elemento de la lista filtrada
+    }
+
+    public void keyTyped(KeyEvent arg0) {
+        // No hay acción específica al escribir la tecla por ahora
+    }
+
+    public void mouseClicked(MouseEvent arg0) {
+        if (arg0.getSource() == tblUsuarios) {
+            mouseClickedTblUsuarios(arg0);
+        }
+    }
+
+    protected void mouseClickedTblUsuarios(MouseEvent arg0) {
+        // Cuando se hace clic en una fila de la tabla, desactivar los botones de acción
+        btnAdicionar.setForeground(Color.BLACK);
+        btnModificar.setForeground(Color.BLACK);
+        btnEliminar.setForeground(Color.BLACK);
+        // Deshabilitar los campos de entrada
+        habilitarEntradas(false);
+        // Cargar los datos de la fila seleccionada en los campos
+        editarFila();
+    }
+
+    public void mouseEntered(MouseEvent arg0) {
+        // No hay acción específica al entrar el ratón
+    }
+
+    public void mouseExited(MouseEvent arg0) {
+        // No hay acción específica al salir el ratón
+    }
+
+    public void mousePressed(MouseEvent arg0) {
+        // No hay acción específica al presionar el ratón
+    }
+
+    public void mouseReleased(MouseEvent arg0) {
+        // No hay acción específica al soltar el ratón
+    }
+
+    // Métodos de FocusListener
+    @Override
+    public void focusGained(FocusEvent e) {
+        if (e.getSource() == txtBuscador) {
+            if (txtBuscador.getText().equalsIgnoreCase("Buscador") && txtBuscador.getForeground() == Color.GRAY) {
+                txtBuscador.setText("");
+                txtBuscador.setForeground(Color.BLACK);
+            }
+        }
+    }
+
+    @Override
+    public void focusLost(FocusEvent e) {
+        if (e.getSource() == txtBuscador) {
+            if (txtBuscador.getText().trim().isEmpty()) {
+                txtBuscador.setText("Buscador");
+                txtBuscador.setForeground(Color.GRAY);
+            }
+        }
+    }
+
+    private void ajustarAnchoColumnas() {
+        TableColumnModel tcm = tblUsuarios.getColumnModel();
+        // Establecer el ancho preferido para cada columna basándose en el porcentaje del ancho del panel de desplazamiento
+        tcm.getColumn(0).setPreferredWidth(anchoColumna(8));   // CODIGO
+        tcm.getColumn(1).setPreferredWidth(anchoColumna(20));  // NOMBRE DE USUARIO
+        tcm.getColumn(2).setPreferredWidth(anchoColumna(15));  // CONTRASEÑA
+        tcm.getColumn(3).setPreferredWidth(anchoColumna(9));   // CREATE
+        tcm.getColumn(4).setPreferredWidth(anchoColumna(9));   // READ
+        tcm.getColumn(5).setPreferredWidth(anchoColumna(9));   // UPDATE
+        tcm.getColumn(6).setPreferredWidth(anchoColumna(9));   // DELETE
+    }
+
+    // Método para listar usuarios con filtrado opcional
+    void listar(String filterText, int posFila) {
+        modelo.setRowCount(0); // Limpiar las filas existentes
+        List<Usuario> usersToDisplay = new ArrayList<>();
+
+        // Obtener todos los usuarios de ArregloUsuarios
+        ArrayList<Usuario> allUsers = new ArrayList<>();
+        for (int i = 0; i < ap.tamanio(); i++) {
+            allUsers.add(ap.obtener(i));
+        }
+
+        // Aplicar filtro si el texto de búsqueda no está vacío y no es la marca de agua
+        if (filterText != null && !filterText.trim().isEmpty() && !filterText.trim().equalsIgnoreCase("Buscador")) {
+            String lowerCaseFilter = filterText.trim().toLowerCase();
+            for (Usuario user : allUsers) {
+                // Verificar si el nombre de usuario contiene el texto del filtro
+                boolean matchesByName = user.getNombreDeUsuario().toLowerCase().contains(lowerCaseFilter);
+                
+                // Verificar si el código contiene el texto del filtro (solo si es un número)
+                boolean matchesByCode = false;
+                try {
+                    // Comprobar si el texto del filtro consiste solo en dígitos antes de intentar la conversión
+                    if (lowerCaseFilter.matches("\\d+")) { 
+                        matchesByCode = String.valueOf(user.getCodigo()).contains(lowerCaseFilter);
+                    }
+                } catch (NumberFormatException e) {
+                    // Esto maneja casos donde el texto de búsqueda no es un número válido.
+                    // En este escenario, no se producirá un error ya que la verificación de `matches("\\d+")`
+                    // ya evita el `Integer.parseInt` directo.
+                }
+
+                // Si coincide por nombre O por código, añadir el usuario a la lista a mostrar
+                if (matchesByName || matchesByCode) {
+                    usersToDisplay.add(user);
+                }
+            }
+        } else {
+            // Si no hay filtro o el texto es la marca de agua, mostrar todos los usuarios
+            usersToDisplay.addAll(allUsers);
+        }
+
+        // Poblar la tabla con los usuarios filtrados
+        for (Usuario x : usersToDisplay) {
+            Object[] fila = {
+                x.getCodigo(),
+                x.getNombreDeUsuario(),
+                x.getContraseña(), // Mostrar la contraseña directamente
+                x.isPermisoCreate() ? "Sí" : "No",
+                x.isPermisoRead() ? "Sí" : "No",
+                x.isPermisoUpdate() ? "Sí" : "No",
+                x.isPermisoDelete() ? "Sí" : "No"
+            };
+            modelo.addRow(fila);
+        }
+
+        // Seleccionar la fila especificada si hay usuarios para mostrar
+        if (usersToDisplay.size() > 0) {
+            if (posFila >= usersToDisplay.size()) {
+                posFila = usersToDisplay.size() - 1; // Ajustar si la posición deseada está fuera de límites
+            }
+            tblUsuarios.getSelectionModel().setSelectionInterval(posFila, posFila);
+        } else {
+            // Si no hay usuarios, limpiar los campos de entrada
+            limpieza(); 
+        }
+    }
+
+    // Método listar sobrecargado por conveniencia, llama al listar principal con el filtro actual del buscador
+    void listar(int posFila) {
+        listar(txtBuscador.getText(), posFila);
+    }
+
+    void editarFila() {
+        int selectedRow = tblUsuarios.getSelectedRow();
+        // Si no hay fila seleccionada o la tabla está vacía (ej., después de filtrar sin resultados)
+        if (selectedRow == -1 || modelo.getRowCount() == 0) { 
+            limpieza(); // Limpiar los campos de entrada
+        } else {
+            // Obtener el código de usuario de la primera columna de la fila seleccionada en la tabla
+            // Esto es más seguro ya que refleja los datos actualmente mostrados (y posiblemente filtrados)
+            int codigo = (int) modelo.getValueAt(selectedRow, 0);
+            Usuario x = ap.buscar(codigo); // Recuperar el objeto usuario completo del arreglo principal usando su código
+
+            if (x != null) { // Si el usuario es encontrado (debería ser siempre si el código proviene de la tabla)
+                txtCodigo.setText("" + x.getCodigo());
+                txtNombreDeUsuario.setText(x.getNombreDeUsuario());
+                txtContraseña.setText(x.getContraseña());
+                chckbxPermisoCreate.setSelected(x.isPermisoCreate());
+                chckbxPermisoRead.setSelected(x.isPermisoRead());
+                chckbxPermisoUpdate.setSelected(x.isPermisoUpdate());
+                chckbxPermisoDelete.setSelected(x.isPermisoDelete());
+            } else {
+                // Este caso idealmente no debería ocurrir si se mantiene la consistencia de los datos,
+                // pero como respaldo, limpiar los campos.
+                limpieza();
+            }
+        }
+    }
+
+    void limpieza() {
+        txtCodigo.setText("" + ap.codigoCorrelativo()); // Establecer el siguiente código correlativo
+        txtNombreDeUsuario.setText("");
+        txtContraseña.setText("");
+        chckbxPermisoCreate.setSelected(false);
+        chckbxPermisoRead.setSelected(false);
+        chckbxPermisoUpdate.setSelected(false);
+        chckbxPermisoDelete.setSelected(false);
+    }
+
+    void adicionarModificar() {
+        String nombre = leerNombreDeUsuario();
+        String contraseña = leerContraseña();
+        boolean create = chckbxPermisoCreate.isSelected();
+        boolean read = chckbxPermisoRead.isSelected();
+        boolean update = chckbxPermisoUpdate.isSelected();
+        boolean delete = chckbxPermisoDelete.isSelected();
+
+        // Validación de entrada para nombre de usuario y contraseña
+        if (nombre.isEmpty() || contraseña.isEmpty()) {
+            error("Nombre de usuario y Contraseña no pueden estar vacíos.", txtNombreDeUsuario);
+            return;
+        }
+
+        int posFila = tblUsuarios.getSelectedRow();
+        if (btnAdicionar.getForeground() == Color.BLUE) { // Si el botón "Adicionar" está activo
+            // Verificar si el nombre de usuario ya existe para un nuevo usuario
+            if (ap.buscarPorNombreUsuario(nombre) == null) {
+                int codigo = ap.codigoCorrelativo();
+                Usuario nueva = new Usuario(codigo, nombre, contraseña, create, read, update, delete);
+                ap.adicionar(nueva); // Añadir el nuevo usuario
+                posFila = ap.tamanio() - 1; // Seleccionar la fila recién añadida
+                limpieza(); // Limpiar campos para la siguiente entrada
+                txtNombreDeUsuario.requestFocus(); // Poner el foco en el campo de nombre de usuario
+                mensaje("Usuario agregado correctamente.");
+            } else {
+                error("El nombre de usuario '" + nombre + "' ya existe.", txtNombreDeUsuario);
+            }
+        } else if (btnModificar.getForeground() == Color.BLUE) { // Si el botón "Modificar" está activo
+            if (ap.tamanio() > 0 && posFila != -1) { // Asegurarse de que haya usuarios y una fila seleccionada
+            	Usuario usuarioAModificar = ap.obtener(posFila); // Obtener el objeto usuario a modificar
+                // Verificar si el nuevo nombre de usuario ya está tomado por otro usuario (no el que se está modificando)
+                if (!usuarioAModificar.getNombreDeUsuario().equalsIgnoreCase(nombre) && ap.buscarPorNombreUsuario(nombre) != null) {
+                    error("El nombre de usuario '" + nombre + "' ya está en uso por otro usuario.", txtNombreDeUsuario);
+                    return;
+                }
+                
+                // Actualizar las propiedades del usuario
+                usuarioAModificar.setNombreDeUsuario(nombre);
+                usuarioAModificar.setContraseña(contraseña);
+                usuarioAModificar.setPermisoCreate(create);
+                usuarioAModificar.setPermisoRead(read);
+                usuarioAModificar.setPermisoUpdate(update);
+                usuarioAModificar.setPermisoDelete(delete);
+
+                btnModificar.setForeground(Color.BLACK); // Desactivar el botón "Modificar"
+                habilitarEntradas(false); // Deshabilitar los campos de entrada
+                mensaje("Usuario modificado correctamente.");
+            } else {
+                mensaje("Seleccione un usuario para modificar.");
+                btnModificar.setForeground(Color.BLACK);
+            }
+        }
+        listar(txtBuscador.getText(), posFila); // Refrescar la tabla con el filtro actual y la selección
+        editarFila(); // Actualizar los campos de entrada basándose en la selección actual
+    }
+
+    void mensaje(String s) {
+        JOptionPane.showMessageDialog(this, s, "Información", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    void error(String s, JTextField txt) {
+        mensaje(s);
+        txt.setText(""); // Limpiar el campo erróneo
+        txt.requestFocus(); // Poner el foco de nuevo en el campo erróneo
+    }
+
+    void habilitarEntradas(boolean sino) {
+        txtNombreDeUsuario.setEditable(sino);
+        txtContraseña.setEditable(sino);
+        chckbxPermisoCreate.setEnabled(sino);
+        chckbxPermisoRead.setEnabled(sino);
+        chckbxPermisoUpdate.setEnabled(sino);
+        chckbxPermisoDelete.setEnabled(sino);
+        
+        txtCodigo.setEditable(false); // El campo de código siempre debe ser no editable
+        
+        // Restablecer los colores de los botones si se están deshabilitando las entradas
+        if (!sino) {
+            btnAdicionar.setForeground(Color.BLACK);
+            btnModificar.setForeground(Color.BLACK);
+        }
+    }
+
+    int leerCodigo() {
+        try {
+            return Integer.parseInt(txtCodigo.getText().trim());
+        } catch (NumberFormatException e) {
+            return -1; // Retornar -1 o lanzar una excepción para entrada inválida
+        }
+    }
+
+    String leerNombreDeUsuario() {
+        return txtNombreDeUsuario.getText().trim();
+    }
+
+    String leerContraseña() {
+        return txtContraseña.getText().trim();
+    }
+
+    // Método auxiliar para calcular el ancho de columna basado en un porcentaje
+    int anchoColumna(int porcentaje) {
+        return porcentaje * scrollPane.getWidth() / 100;
+    }
+
+    // Diálogo de confirmación
+    int confirmar(String s) {
+        return JOptionPane.showConfirmDialog(this, s, "Alerta", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null);
+    }
+}

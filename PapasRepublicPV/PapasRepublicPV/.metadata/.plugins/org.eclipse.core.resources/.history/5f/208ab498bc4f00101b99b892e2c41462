@@ -1,0 +1,41 @@
+package arreglos;
+
+import clases.Usuario;
+import java.util.ArrayList;
+import java.sql.PreparedStatement;
+
+public class ArregloUsuarios {
+	
+	Conexion cx;
+	
+	public ArregloUsuarios() {
+		cx = new Conexion();
+	}
+	
+	public boolean insertarUsuario(Usuario usuario) {
+		boolean resultado = false;
+		try {
+			cx.conectar();
+			String sql = "INSERT INTO usuarios (codigo, nombreDeUsuario, contraseña, permisoCreate, permisoRead, permisoUpdate, permisoDelete) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			PreparedStatement ps = cx.cx.prepareStatement(sql);
+			ps.setInt(1, usuario.getCodigo());
+			ps.setString(2, usuario.getNombreDeUsuario());
+			ps.setString(3, usuario.getContraseña());
+			ps.setBoolean(4, usuario.isPermisoCreate());
+			ps.setBoolean(5, usuario.isPermisoRead());
+			ps.setBoolean(6, usuario.isPermisoUpdate());
+			ps.setBoolean(7, usuario.isPermisoDelete());
+			int filasAfectadas = ps.executeUpdate();
+			if (filasAfectadas > 0) {
+				resultado = true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			cx.desconectar();
+		}
+		return resultado;
+	}
+       
+
+}
