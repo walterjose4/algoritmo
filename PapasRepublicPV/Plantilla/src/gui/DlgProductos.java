@@ -18,6 +18,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import arreglos.ArregloProductos;
+import clases.Producto;
 
 public class DlgProductos extends JDialog implements ActionListener {
 
@@ -35,7 +37,9 @@ public class DlgProductos extends JDialog implements ActionListener {
 	private JTextField txtPreciodeVenta;
 	private JButton btnAdicionar;
 	private JButton btnModificar;
-	private JButton btnEliminar;
+        private JButton btnEliminar;
+        private DefaultTableModel modelo;
+        private ArregloProductos ap = new ArregloProductos();
 
 	/**
 	 * Launch the application.
@@ -149,37 +153,78 @@ public class DlgProductos extends JDialog implements ActionListener {
 					.addContainerGap(21, Short.MAX_VALUE))
 		);
 		
-		tblProductos = new JTable();
-		tblProductos.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-			},
-			new String[] {
-				"NOMBRE", "ITEM", "CANTIDAD DISPONIBLE", "PRECIO DE VENTA"
-			}
-		));
-		tblProductos.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		tblProductos.setToolTipText("Nombre");
+                modelo = new DefaultTableModel();
+                modelo.addColumn("NOMBRE");
+                modelo.addColumn("ITEM");
+                modelo.addColumn("CANTIDAD DISPONIBLE");
+                modelo.addColumn("PRECIO DE VENTA");
+
+                tblProductos = new JTable(modelo);
+                tblProductos.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+                tblProductos.setToolTipText("Nombre");
 		scrollPane.setViewportView(tblProductos);
 		contentPanel.setLayout(gl_contentPanel);
 	}
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == btnAdicionar) {
-			actionPerformedBtnNewButton(e);
-		}
-	}
-	 protected void actionPerformedBtnNewButton(ActionEvent e) {
-	}
+        public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == btnAdicionar) {
+                        actionPerformedBtnAdicionar(e);
+                } else if (e.getSource() == btnModificar) {
+                        actionPerformedBtnModificar(e);
+                } else if (e.getSource() == btnEliminar) {
+                        actionPerformedBtnEliminar(e);
+                }
+        }
+
+        protected void actionPerformedBtnAdicionar(ActionEvent e) {
+                String nombre = txtNombre.getText().trim();
+                String item = txtItem.getText().trim();
+                int cantidad = 0;
+                double precio = 0;
+                try {
+                        cantidad = Integer.parseInt(txtCantidadDisponible.getText().trim());
+                        precio = Double.parseDouble(txtPreciodeVenta.getText().trim());
+                } catch (NumberFormatException ex) {
+                        return;
+                }
+                Producto p = new Producto(nombre, item, cantidad, precio);
+                ap.adicionar(p);
+                Object[] fila = { nombre, item, cantidad, precio };
+                modelo.addRow(fila);
+        }
+
+        protected void actionPerformedBtnModificar(ActionEvent e) {
+                int fila = tblProductos.getSelectedRow();
+                if (fila == -1) {
+                        return;
+                }
+                String nombre = txtNombre.getText().trim();
+                String item = txtItem.getText().trim();
+                int cantidad;
+                double precio;
+                try {
+                        cantidad = Integer.parseInt(txtCantidadDisponible.getText().trim());
+                        precio = Double.parseDouble(txtPreciodeVenta.getText().trim());
+                } catch (NumberFormatException ex) {
+                        return;
+                }
+                Producto p = ap.obtener(fila);
+                p.setNombre(nombre);
+                p.setItem(item);
+                p.setCantidadDisponible(cantidad);
+                p.setPrecioDeVenta(precio);
+                modelo.setValueAt(nombre, fila, 0);
+                modelo.setValueAt(item, fila, 1);
+                modelo.setValueAt(cantidad, fila, 2);
+                modelo.setValueAt(precio, fila, 3);
+        }
+
+        protected void actionPerformedBtnEliminar(ActionEvent e) {
+                int fila = tblProductos.getSelectedRow();
+                if (fila == -1) {
+                        return;
+                }
+                Producto p = ap.obtener(fila);
+                ap.eliminar(p);
+                modelo.removeRow(fila);
+        }
 }
