@@ -24,7 +24,8 @@ public class DlgProductos extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	private JScrollPane scrollPane;
-	private JTable tblProductos;
+        private JTable tblProductos;
+        private DefaultTableModel modelo;
 	private JLabel lblNombre;
 	private JLabel lblItem;
 	private JLabel lblCantidadDisponible;
@@ -70,8 +71,7 @@ public class DlgProductos extends JDialog implements ActionListener {
 		
 		lblPreciodeVenta = new JLabel("Precio de venta	:");
 		
-		txtNombre = new JTextField();
-		txtNombre.setEditable(false);
+                txtNombre = new JTextField();
 		txtNombre.setColumns(10);
 		
 		txtItem = new JTextField();
@@ -86,9 +86,11 @@ public class DlgProductos extends JDialog implements ActionListener {
 		btnAdicionar = new JButton("Adicionar");
 		btnAdicionar.addActionListener(this);
 		
-		btnModificar = new JButton("Modificar");
-		
-		btnEliminar = new JButton("Eliminar");
+                btnModificar = new JButton("Modificar");
+                btnModificar.addActionListener(this);
+
+                btnEliminar = new JButton("Eliminar");
+                btnEliminar.addActionListener(this);
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.TRAILING)
@@ -149,37 +151,92 @@ public class DlgProductos extends JDialog implements ActionListener {
 					.addContainerGap(21, Short.MAX_VALUE))
 		);
 		
-		tblProductos = new JTable();
-		tblProductos.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-			},
-			new String[] {
-				"NOMBRE", "ITEM", "CANTIDAD DISPONIBLE", "PRECIO DE VENTA"
-			}
-		));
-		tblProductos.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		tblProductos.setToolTipText("Nombre");
-		scrollPane.setViewportView(tblProductos);
-		contentPanel.setLayout(gl_contentPanel);
+                tblProductos = new JTable();
+                modelo = new DefaultTableModel(
+                                new Object[][] {},
+                                new String[] {
+                                        "NOMBRE", "ITEM", "CANTIDAD DISPONIBLE", "PRECIO DE VENTA"
+                                }
+                );
+                tblProductos.setModel(modelo);
+                tblProductos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                tblProductos.setToolTipText("Nombre");
+                tblProductos.addMouseListener(new java.awt.event.MouseAdapter() {
+                        @Override
+                        public void mouseClicked(java.awt.event.MouseEvent e) {
+                                int fila = tblProductos.getSelectedRow();
+                                if (fila != -1) {
+                                        txtNombre.setText(String.valueOf(modelo.getValueAt(fila, 0)));
+                                        txtItem.setText(String.valueOf(modelo.getValueAt(fila, 1)));
+                                        txtCantidadDisponible.setText(String.valueOf(modelo.getValueAt(fila, 2)));
+                                        txtPreciodeVenta.setText(String.valueOf(modelo.getValueAt(fila, 3)));
+                                }
+                        }
+                });
+                scrollPane.setViewportView(tblProductos);
+                contentPanel.setLayout(gl_contentPanel);
 	}
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == btnAdicionar) {
-			actionPerformedBtnNewButton(e);
-		}
-	}
-	 protected void actionPerformedBtnNewButton(ActionEvent e) {
-	}
+        public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == btnAdicionar) {
+                        actionPerformedBtnAdicionar(e);
+                } else if (e.getSource() == btnModificar) {
+                        actionPerformedBtnModificar(e);
+                } else if (e.getSource() == btnEliminar) {
+                        actionPerformedBtnEliminar(e);
+                }
+        }
+
+        private void actionPerformedBtnAdicionar(ActionEvent e) {
+                String nombre = txtNombre.getText().trim();
+                String item = txtItem.getText().trim();
+                String cantStr = txtCantidadDisponible.getText().trim();
+                String precioStr = txtPreciodeVenta.getText().trim();
+                if (nombre.isEmpty() || item.isEmpty() || cantStr.isEmpty() || precioStr.isEmpty()) {
+                        javax.swing.JOptionPane.showMessageDialog(this, "Complete todos los campos");
+                        return;
+                }
+                try {
+                        int cantidad = Integer.parseInt(cantStr);
+                        double precio = Double.parseDouble(precioStr);
+                        Object[] fila = { nombre, item, cantidad, precio };
+                        modelo.addRow(fila);
+                        limpiarCampos();
+                } catch (NumberFormatException ex) {
+                        javax.swing.JOptionPane.showMessageDialog(this, "Cantidad y precio deben ser n\u00FAmeros");
+                }
+        }
+
+        private void actionPerformedBtnModificar(ActionEvent e) {
+                int filaSel = tblProductos.getSelectedRow();
+                if (filaSel == -1) {
+                        javax.swing.JOptionPane.showMessageDialog(this, "Seleccione una fila a modificar");
+                        return;
+                }
+                try {
+                        int cantidad = Integer.parseInt(txtCantidadDisponible.getText().trim());
+                        double precio = Double.parseDouble(txtPreciodeVenta.getText().trim());
+                        modelo.setValueAt(txtNombre.getText().trim(), filaSel, 0);
+                        modelo.setValueAt(txtItem.getText().trim(), filaSel, 1);
+                        modelo.setValueAt(cantidad, filaSel, 2);
+                        modelo.setValueAt(precio, filaSel, 3);
+                        limpiarCampos();
+                } catch (NumberFormatException ex) {
+                        javax.swing.JOptionPane.showMessageDialog(this, "Cantidad y precio deben ser n\u00FAmeros");
+                }
+        }
+
+        private void actionPerformedBtnEliminar(ActionEvent e) {
+                int filaSel = tblProductos.getSelectedRow();
+                if (filaSel != -1) {
+                        modelo.removeRow(filaSel);
+                        limpiarCampos();
+                }
+        }
+
+        private void limpiarCampos() {
+                txtNombre.setText("");
+                txtItem.setText("");
+                txtCantidadDisponible.setText("");
+                txtPreciodeVenta.setText("");
+        }
 }
